@@ -5,9 +5,11 @@ import Variables
 import csv
 
 Autos = []
+output = []
 
-def Start():
+def GenerateParking():
     Debug("[Started]")
+    outputParking = ""
 
     # Сколько вместится машин по горизонтали
     maxCarCountHorizontal = math.floor ((Variables.ParkHorizontalSize - Variables.VerticalRoadCount * Variables.VerticalRoadSize) / (Variables.CarHorizontalSize + Variables.Car_range))
@@ -59,14 +61,16 @@ def Start():
 
                 xcoord = x * (Variables.CarHorizontalSize + Variables.Car_range) + realVerticalRoadCount * Variables.VerticalRoadSize
                 ycoord = y * (Variables.CarVerticalSize + Variables.Car_range / 2) + realHorozontalRoadCount * Variables.HorizontalRoadSize
-                SetCar(xcoord, ycoord)
+                
+                outputParking += "," + str(Variables.AutoType) + "," + str(xcoord) + "," + str(ycoord)
+
                 matrix[x][y] = 1
                 trueCarCount += 1
         i += 1
         if (i > maxCarCount * 1000):
             break
     
-    WriteCSV()
+    return outputParking
 
 def Debug(msg):
     print(datetime.now().strftime("%H:%M:%S:%M: ") + str(msg))
@@ -75,18 +79,18 @@ def SetCar(xcoord, ycoord):
     Autos.append([Variables.AutoType, xcoord, ycoord])
     Debug("Car placed: " + str(xcoord) + ", " + str(ycoord))
 
-def WriteCSV():
+def WriteCSV(data):
     Debug("Writing data...")
     try:
         file = open('output.csv', 'w')
-        data = [] * Variables.ParkingsCount
-        for auto in range(Variables.ParkingsCount):
-            data.append(auto)
         with file:
             writer = csv.writer(file)
-            writer.writerows(data)
+            writer.writerow(data)
         Debug("Data writing complete!")
     except Exception as ex:
         Debug("Error with writing data!\n" + str(ex))
 
-Start()
+for i in range(Variables.ParkingsCount):
+
+    output.append(str(Variables.Type) + str(GenerateParking()))
+WriteCSV(output)
